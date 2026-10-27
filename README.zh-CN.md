@@ -7,11 +7,11 @@
 
 - [English](./README.md) · 中文
 - 许可证：MIT
-- 拟议仓库：[`YuanAqi/offline-ops-toolkit`](https://github.com/YuanAqi/offline-ops-toolkit)
+- 仓库：[`YuanAqi/offline-ops-toolkit`](https://github.com/YuanAqi/offline-ops-toolkit)
 
-## 为什么值得 Star
+## 做什么
 
-盯 Agent 时你本来就在浏览器里。这些是 **单文件、可离线** 的小工具：投递 zip 不用上传就能哈希、往例行任务里贴 cron 前先看懂、美化 tool schema dump、修日志乱码。五秒能用，适合收藏。
+盯 Agent 时经常要做几件小事：把 JSON 排整齐、用白话看懂一段 cron、不上传文件就算 SHA-256、试着修好日志乱码。**offline-ops-toolkit** 就是四个静态网页加一个中英落地页——本机打开或挂 GitHub Pages 即可，不用安装、没有统计追踪。给需要这些浏览器小工具的人用。
 
 ## 一条命令演示
 

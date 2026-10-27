@@ -7,12 +7,12 @@
 
 - English · [中文](./README.zh-CN.md)
 - License: MIT
-- Proposed GitHub: [`YuanAqi/offline-ops-toolkit`](https://github.com/YuanAqi/offline-ops-toolkit)
+- GitHub: [`YuanAqi/offline-ops-toolkit`](https://github.com/YuanAqi/offline-ops-toolkit)
 - Pages: enable GitHub Pages from repo root → `index.html`
 
-## Why star this
+## What it does
 
-You already live in a browser while babysitting agents. These are **single-file tools that work offline** after first load: hash a delivery zip without uploading it, explain a cron before pasting into a routine, pretty-print a tool-schema dump, repair mojibake in logs. Useful in five seconds; safe to bookmark.
+Small everyday chores while you watch agents: pretty-print JSON, read a cron expression in plain language, check a file’s SHA-256 without uploading it, and try to fix garbled UTF-8 log text. **offline-ops-toolkit** is four static HTML pages plus a bilingual landing page — open locally or on GitHub Pages, no install, no trackers. For anyone who wants these helpers in a browser tab.
 
 ## One-command demo
 
