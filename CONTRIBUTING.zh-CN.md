@@ -12,7 +12,7 @@
 ## 开发
 
 ```bash
-git clone https://github.com/YuanAqi/offline-ops-toolkit.git
+git clone https://github.com/TheCleverJay/offline-ops-toolkit.git
 cd offline-ops-toolkit
 PYTHONPATH=src python tests/test_smoke.py   # HTML 工具箱用 ./tests/smoke.sh
 ./scripts/smoke.sh

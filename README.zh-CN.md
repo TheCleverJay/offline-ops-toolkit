@@ -7,7 +7,7 @@
 
 - [English](./README.md) · 中文
 - 许可证：MIT
-- 仓库：[`YuanAqi/offline-ops-toolkit`](https://github.com/YuanAqi/offline-ops-toolkit)
+- 仓库：[`TheCleverJay/offline-ops-toolkit`](https://github.com/TheCleverJay/offline-ops-toolkit)
 
 ## 做什么
 

@@ -7,7 +7,7 @@
 
 - English · [中文](./README.zh-CN.md)
 - License: MIT
-- GitHub: [`YuanAqi/offline-ops-toolkit`](https://github.com/YuanAqi/offline-ops-toolkit)
+- GitHub: [`TheCleverJay/offline-ops-toolkit`](https://github.com/TheCleverJay/offline-ops-toolkit)
 - Pages: enable GitHub Pages from repo root → `index.html`
 
 ## What it does
