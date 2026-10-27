@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Static, tracker-free offline browser tools for agent operators: JSON formatter, cron explainer, SHA-256 verify, UTF-8 mojibake lab. MIT."/>
+<meta name="theme-color" content="#1a1f2b"/>
+<title>Offline Ops Toolkit · YuanAqi</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f7f9;
+    --card: #fff;
+    --ink: #1a1f2b;
+    --muted: #5c6578;
+    --line: #c9d0dc;
+    --accent: #2f6fed;
+    --accent-soft: #2f6fed22;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1218;
+      --card: #171b24;
+      --ink: #e8ecf4;
+      --muted: #9aa3b5;
+      --line: #2a3140;
+      --accent: #6b9fff;
+      --accent-soft: #6b9fff33;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 18px 48px; }
+  header {
+    display: flex; flex-wrap: wrap; align-items: flex-start;
+    justify-content: space-between; gap: 12px; margin-bottom: 8px;
+  }
+  .brand h1 { margin: 0 0 6px; font-size: 1.75rem; letter-spacing: -0.02em; }
+  .sub { margin: 0; color: var(--muted); max-width: 52ch; }
+  .lang {
+    display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line);
+    border-radius: 999px; background: var(--card); font-size: 13px;
+  }
+  .lang button {
+    border: 0; background: transparent; color: var(--muted);
+    padding: 6px 12px; border-radius: 999px; cursor: pointer; font: inherit;
+  }
+  .lang button[aria-pressed="true"] {
+    background: var(--accent-soft); color: var(--accent); font-weight: 600;
+  }
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+  .badge {
+    font-size: 12px; color: var(--muted); border: 1px solid var(--line);
+    border-radius: 999px; padding: 4px 10px; background: var(--card);
+  }
+  .grid {
+    display: grid; gap: 14px; margin: 22px 0 28px;
+  }
+  @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+  a.card {
+    display: block; padding: 18px 16px; border: 1px solid var(--line);
+    border-radius: 14px; text-decoration: none; color: inherit;
+    background: var(--card); transition: border-color .15s, transform .15s, box-shadow .15s;
+    min-height: 118px;
+  }
+  a.card:hover, a.card:focus-visible {
+    border-color: var(--accent); box-shadow: 0 6px 20px #0001;
+    transform: translateY(-1px); outline: none;
+  }
+  a.card .kicker {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--accent); font-weight: 600; margin-bottom: 6px;
+  }
+  a.card strong { display: block; font-size: 1.05rem; margin-bottom: 6px; }
+  a.card span.desc { color: var(--muted); font-size: 0.92rem; }
+  .notes {
+    border: 1px dashed var(--line); border-radius: 12px; padding: 14px 16px;
+    color: var(--muted); font-size: 0.92rem; background: var(--card);
+  }
+  .notes ul { margin: 8px 0 0; padding-left: 1.2em; }
+  footer {
+    margin-top: 36px; font-size: 13px; color: var(--muted);
+    border-top: 1px solid var(--line); padding-top: 16px;
+  }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1 id="t-title">Offline Ops Toolkit</h1>
+      <p class="sub" id="t-sub">Static, tracker-free browser tools for agent operators. Works offline after first load. MIT.</p>
+    </div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" id="to-en" aria-pressed="true">EN</button>
+      <button type="button" id="to-zh" aria-pressed="false">中文</button>
+    </div>
+  </header>
+  <div class="badge-row">
+    <span class="badge" id="b1">No build step</span>
+    <span class="badge" id="b2">No CDN / analytics</span>
+    <span class="badge" id="b3">file:// friendly</span>
+    <span class="badge" id="b4">MIT License</span>
+  </div>
+  <div class="grid">
+    <a class="card" href="tools/json-formatter.html">
+      <div class="kicker" id="c1k">Tool 01</div>
+      <strong id="c1t">JSON Formatter</strong>
+      <span class="desc" id="c1d">Pretty-print, minify, or validate JSON in this tab.</span>
+    </a>
+    <a class="card" href="tools/cron-explain.html">
+      <div class="kicker" id="c2k">Tool 02</div>
+      <strong id="c2t">Cron Explain</strong>
+      <span class="desc" id="c2d">Explain five-field cron expressions in plain EN/ZH.</span>
+    </a>
+    <a class="card" href="tools/sha256-verify.html">
+      <div class="kicker" id="c3k">Tool 03</div>
+      <strong id="c3t">SHA256 Verify</strong>
+      <span class="desc" id="c3d">Hash a dropped file with Web Crypto; compare to an expected digest.</span>
+    </a>
+    <a class="card" href="tools/utf8-mojibake.html">
+      <div class="kicker" id="c4k">Tool 04</div>
+      <strong id="c4t">UTF-8 Mojibake Lab</strong>
+      <span class="desc" id="c4d">Diagnose common GBK/UTF-8 mis-decoding in agent logs.</span>
+    </a>
+  </div>
+  <div class="notes">
+    <strong id="n-title">How to use</strong>
+    <ul id="n-list">
+      <li>Open this page via GitHub Pages, a local static server, or <code>file://</code>.</li>
+      <li>Tools never upload your data; hashing and parsing stay in the browser.</li>
+      <li>After the first load, they keep working offline.</li>
+    </ul>
+  </div>
+  <footer id="t-foot">
+    <a href="https://github.com/YuanAqi/offline-ops-toolkit">YuanAqi/offline-ops-toolkit</a>
+    · no network calls · no analytics ·
+    <a href="SECURITY.md">Security</a> ·
+    <a href="CONTRIBUTING.md">Contributing</a>
+  </footer>
+</div>
+<script>
+const copy = {
+  en: {
+    title: 'Offline Ops Toolkit',
+    sub: 'Static, tracker-free browser tools for agent operators. Works offline after first load. MIT.',
+    b1: 'No build step', b2: 'No CDN / analytics', b3: 'file:// friendly', b4: 'MIT License',
+    c1k: 'Tool 01', c1t: 'JSON Formatter', c1d: 'Pretty-print, minify, or validate JSON in this tab.',
+    c2k: 'Tool 02', c2t: 'Cron Explain', c2d: 'Explain five-field cron expressions in plain EN/ZH.',
+    c3k: 'Tool 03', c3t: 'SHA256 Verify', c3d: 'Hash a dropped file with Web Crypto; compare to an expected digest.',
+    c4k: 'Tool 04', c4t: 'UTF-8 Mojibake Lab', c4d: 'Diagnose common GBK/UTF-8 mis-decoding in agent logs.',
+    nTitle: 'How to use',
+    n1: 'Open this page via GitHub Pages, a local static server, or file://.',
+    n2: 'Tools never upload your data; hashing and parsing stay in the browser.',
+    n3: 'After the first load, they keep working offline.',
+    footHtml: null
+  },
+  zh: {
+    title: '离线运维工具箱',
+    sub: '面向 Agent 运维的静态浏览器工具，无追踪。首次打开后可离线使用。MIT。',
+    b1: '无构建步骤', b2: '无 CDN / 统计', b3: '支持 file://', b4: 'MIT 许可',
+    c1k: '工具 01', c1t: 'JSON 格式化', c1d: '在本页美化、压缩或校验 JSON。',
+    c2k: '工具 02', c2t: 'Cron 解释', c2d: '用中英白话解释五段 cron 表达式。',
+    c3k: '工具 03', c3t: 'SHA256 校验', c3d: '拖入文件用 Web Crypto 算哈希，并与期望值比对。',
+    c4k: '工具 04', c4t: 'UTF-8 乱码实验室', c4d: '诊断 Agent 日志里常见的 GBK/UTF-8 误解码。',
+    nTitle: '怎么用',
+    n1: '通过 GitHub Pages、本地静态服务或 file:// 打开本页。',
+    n2: '工具不会上传你的数据；哈希与解析都在浏览器内完成。',
+    n3: '首次加载后即可离线继续使用。',
+    footHtml: null
+  }
+};
+function apply(lang) {
+  const c = copy[lang] || copy.en;
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hans' : 'en';
+  document.getElementById('t-title').textContent = c.title;
+  document.getElementById('t-sub').textContent = c.sub;
+  document.getElementById('b1').textContent = c.b1;
+  document.getElementById('b2').textContent = c.b2;
+  document.getElementById('b3').textContent = c.b3;
+  document.getElementById('b4').textContent = c.b4;
+  ['1','2','3','4'].forEach(i => {
+    document.getElementById('c'+i+'k').textContent = c['c'+i+'k'];
+    document.getElementById('c'+i+'t').textContent = c['c'+i+'t'];
+    document.getElementById('c'+i+'d').textContent = c['c'+i+'d'];
+  });
+  document.getElementById('n-title').textContent = c.nTitle;
+  const lis = document.querySelectorAll('#n-list li');
+  lis[0].textContent = c.n1;
+  lis[1].textContent = c.n2;
+  lis[2].textContent = c.n3;
+  document.getElementById('to-en').setAttribute('aria-pressed', lang === 'en' ? 'true' : 'false');
+  document.getElementById('to-zh').setAttribute('aria-pressed', lang === 'zh' ? 'true' : 'false');
+  try { localStorage.setItem('oot-lang', lang); } catch (e) {}
+}
+function detectLang() {
+  try {
+    const saved = localStorage.getItem('oot-lang');
+    if (saved === 'en' || saved === 'zh') return saved;
+  } catch (e) {}
+  const nav = (navigator.language || '').toLowerCase();
+  return nav.startsWith('zh') ? 'zh' : 'en';
+}
+document.getElementById('to-zh').onclick = () => apply('zh');
+document.getElementById('to-en').onclick = () => apply('en');
+apply(detectLang());
+</script>
+</body>
+</html>

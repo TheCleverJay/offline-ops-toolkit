@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Offline JSON pretty-print, minify, and validate. No upload."/>
+<title>JSON Formatter · Offline Ops Toolkit</title>
+<style>
+  :root { color-scheme: light dark; --ink:#1a1f2b; --muted:#5c6578; --line:#c9d0dc; --accent:#2f6fed; --bg:#f6f7f9; --card:#fff;
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e8ecf4; --muted:#9aa3b5; --line:#2a3140; --accent:#6b9fff; --bg:#0f1218; --card:#171b24; }
+  }
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+  a.back{color:var(--accent);text-decoration:none;font-size:14px}
+  h1{margin:10px 0 6px;font-size:1.5rem}
+  .lead{color:var(--muted);margin:0 0 16px}
+  textarea,input[type=text],input:not([type]),select{
+    width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--line);
+    border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+  textarea{min-height:180px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  button{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);cursor:pointer;font:inherit}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  #status,.ok{color:#1a7f37}.bad{color:#c62828}.muted{color:var(--muted);font-size:13px}
+  #out,pre{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap}
+  #drop{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;margin:12px 0;background:var(--card)}
+  #drop.drag{border-color:var(--accent);background:var(--accent);color:#fff}
+  code{word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p><a class="back" href="../index.html">← Toolkit</a></p>
+<h1>JSON Formatter</h1>
+<p class="lead">Pretty-print, minify, or validate. All processing stays in this tab — nothing is uploaded.</p>
+<textarea id="in" placeholder='{"hello":"world","nested":[1,2,3]}' spellcheck="false"></textarea>
+<div class="row">
+  <button class="primary" id="pretty" type="button">Pretty</button>
+  <button id="mini" type="button">Minify</button>
+  <button id="validate" type="button">Validate only</button>
+  <button id="clear" type="button">Clear</button>
+</div>
+<p id="status" class="muted"></p>
+<textarea id="out" placeholder="Output" spellcheck="false"></textarea>
+</div>
+<script>
+const status = (msg, ok) => {
+  const s = document.getElementById('status');
+  s.textContent = msg;
+  s.className = ok ? 'ok' : 'bad';
+};
+function parse() {
+  return JSON.parse(document.getElementById('in').value);
+}
+document.getElementById('pretty').onclick = () => {
+  try {
+    const o = parse();
+    document.getElementById('out').value = JSON.stringify(o, null, 2);
+    status('OK · pretty · ' + Object.keys(o === null ? {} : o).length + ' top-level keys (objects only)', true);
+  } catch (e) { status('Invalid JSON: ' + e.message, false); }
+};
+document.getElementById('mini').onclick = () => {
+  try {
+    const o = parse();
+    document.getElementById('out').value = JSON.stringify(o);
+    status('OK · minified · ' + document.getElementById('out').value.length + ' chars', true);
+  } catch (e) { status('Invalid JSON: ' + e.message, false); }
+};
+document.getElementById('validate').onclick = () => {
+  try { parse(); status('OK · valid JSON', true); }
+  catch (e) { status('Invalid JSON: ' + e.message, false); }
+};
+document.getElementById('clear').onclick = () => {
+  document.getElementById('in').value = '';
+  document.getElementById('out').value = '';
+  status('', true);
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Offline UTF-8 mojibake repair lab for agent logs (Latin-1 bytes → UTF-8)."/>
+<title>UTF-8 Mojibake Lab · Offline Ops Toolkit</title>
+<style>
+  :root { color-scheme: light dark; --ink:#1a1f2b; --muted:#5c6578; --line:#c9d0dc; --accent:#2f6fed; --bg:#f6f7f9; --card:#fff;
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e8ecf4; --muted:#9aa3b5; --line:#2a3140; --accent:#6b9fff; --bg:#0f1218; --card:#171b24; }
+  }
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+  a.back{color:var(--accent);text-decoration:none;font-size:14px}
+  h1{margin:10px 0 6px;font-size:1.5rem}
+  .lead{color:var(--muted);margin:0 0 16px}
+  textarea,input[type=text],input:not([type]),select{
+    width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--line);
+    border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+  textarea{min-height:180px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  button{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);cursor:pointer;font:inherit}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  #status,.ok{color:#1a7f37}.bad{color:#c62828}.muted{color:var(--muted);font-size:13px}
+  #out,pre{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap}
+  #drop{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;margin:12px 0;background:var(--card)}
+  #drop.drag{border-color:var(--accent);background:var(--accent);color:#fff}
+  code{word-break:break-all}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p><a class="back" href="../index.html">← Toolkit</a></p>
+<h1>UTF-8 Mojibake Lab</h1>
+<p class="lead">Agent logs often show Chinese as mojibake when bytes were read as Latin-1/Windows-1252 and then treated as Unicode. Paste the garbled text and try a common repair. Best-effort — not a universal decoder.</p>
+<textarea id="in" placeholder="paste mojibake here, e.g. characters that look like Latin-1 garbage" spellcheck="false"></textarea>
+<div class="row">
+  <button class="primary" id="asLatin1ToUtf8" type="button">Treat chars as Latin-1 bytes → UTF-8</button>
+  <button id="showCodes" type="button">Show code points</button>
+  <button id="clear" type="button">Clear</button>
+</div>
+<pre id="out" class="muted">Result will appear here.</pre>
+</div>
+<script>
+function latin1ToBytes(str) {
+  const out = new Uint8Array(str.length);
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    if (c > 255) throw new Error('Non-Latin-1 char at '+i+' (U+'+c.toString(16)+') — paste the mojibake form, not already-correct Unicode');
+    out[i] = c;
+  }
+  return out;
+}
+document.getElementById('asLatin1ToUtf8').onclick = () => {
+  try {
+    const bytes = latin1ToBytes(document.getElementById('in').value);
+    const text = new TextDecoder('utf-8', {fatal:false}).decode(bytes);
+    document.getElementById('out').textContent = text || '(empty result)';
+    document.getElementById('out').className = '';
+  } catch (e) {
+    document.getElementById('out').textContent = 'Error: ' + e.message;
+    document.getElementById('out').className = 'bad';
+  }
+};
+document.getElementById('showCodes').onclick = () => {
+  const s = document.getElementById('in').value;
+  document.getElementById('out').className = '';
+  document.getElementById('out').textContent = [...s].map(ch => ch + '  U+'+ch.codePointAt(0).toString(16).toUpperCase().padStart(4,'0')).join('\n') || '(empty)';
+};
+document.getElementById('clear').onclick = () => {
+  document.getElementById('in').value = '';
+  document.getElementById('out').textContent = 'Result will appear here.';
+  document.getElementById('out').className = 'muted';
+};
+</script>
+</body>
+</html>

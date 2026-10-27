@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Offline SHA-256 file verify with Web Crypto. File never uploads."/>
+<title>SHA256 Verify · Offline Ops Toolkit</title>
+<style>
+  :root { color-scheme: light dark; --ink:#1a1f2b; --muted:#5c6578; --line:#c9d0dc; --accent:#2f6fed; --bg:#f6f7f9; --card:#fff;
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e8ecf4; --muted:#9aa3b5; --line:#2a3140; --accent:#6b9fff; --bg:#0f1218; --card:#171b24; }
+  }
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+  a.back{color:var(--accent);text-decoration:none;font-size:14px}
+  h1{margin:10px 0 6px;font-size:1.5rem}
+  .lead{color:var(--muted);margin:0 0 16px}
+  textarea,input[type=text],input:not([type]),select{
+    width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--line);
+    border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+  textarea{min-height:180px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  button{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);cursor:pointer;font:inherit}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  #status,.ok{color:#1a7f37}.bad{color:#c62828}.muted{color:var(--muted);font-size:13px}
+  #out,pre{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap}
+  #drop{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;margin:12px 0;background:var(--card)}
+  #drop.drag{border-color:var(--accent);background:var(--accent);color:#fff}
+  code{word-break:break-all}
+
+label{display:block;margin:10px 0 4px;font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p><a class="back" href="../index.html">← Toolkit</a></p>
+<h1>SHA256 Verify</h1>
+<p class="lead">Hashes in this tab with Web Crypto. The file never leaves your browser. Large files are limited by available memory.</p>
+<div id="drop">Drop a file here or <label style="display:inline;color:var(--accent);cursor:pointer">choose<input id="file" type="file" style="display:none"/></label></div>
+<label for="expect">Expected SHA256 (optional)</label>
+<input id="expect" type="text" placeholder="paste from SHA256SUMS.txt" spellcheck="false"/>
+<div class="row"><button class="primary" id="hash" type="button" disabled>Hash file</button></div>
+<p id="meta" class="muted"></p>
+<p id="digest"></p>
+<p id="cmp"></p>
+</div>
+<script>
+let buf = null, fileName = '';
+const drop = document.getElementById('drop');
+function setFile(f) {
+  if (!f) return;
+  fileName = f.name;
+  document.getElementById('meta').textContent = f.name + ' · ' + f.size.toLocaleString() + ' bytes';
+  document.getElementById('hash').disabled = false;
+  f.arrayBuffer().then(b => { buf = b; });
+  document.getElementById('digest').textContent = '';
+  document.getElementById('cmp').textContent = '';
+}
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('drag'); setFile(e.dataTransfer.files[0]); });
+document.getElementById('file').onchange = e => setFile(e.target.files[0]);
+function hex(buf) {
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+document.getElementById('hash').onclick = async () => {
+  if (!buf) return;
+  if (!window.crypto || !crypto.subtle) {
+    document.getElementById('cmp').textContent = 'Web Crypto unavailable (need a secure context: https or localhost).';
+    document.getElementById('cmp').className = 'bad';
+    return;
+  }
+  const dig = await crypto.subtle.digest('SHA-256', buf);
+  const h = hex(dig);
+  document.getElementById('digest').innerHTML = 'SHA256: <code>' + h + '</code>';
+  const exp = (document.getElementById('expect').value || '').trim().toLowerCase().replace(/\s+/g,'');
+  const cmp = document.getElementById('cmp');
+  if (!exp) { cmp.textContent = 'No expected hash provided — copy the digest above.'; cmp.className = 'muted'; return; }
+  if (exp === h) { cmp.textContent = 'MATCH for ' + fileName; cmp.className = 'ok'; }
+  else { cmp.textContent = 'MISMATCH — do not trust the file'; cmp.className = 'bad'; }
+};
+</script>
+</body>
+</html>
