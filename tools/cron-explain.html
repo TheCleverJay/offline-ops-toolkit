@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="Explain five-field cron expressions in English or Chinese. Offline."/>
+<title>Cron Explain · Offline Ops Toolkit</title>
+<style>
+  :root { color-scheme: light dark; --ink:#1a1f2b; --muted:#5c6578; --line:#c9d0dc; --accent:#2f6fed; --bg:#f6f7f9; --card:#fff;
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#e8ecf4; --muted:#9aa3b5; --line:#2a3140; --accent:#6b9fff; --bg:#0f1218; --card:#171b24; }
+  }
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:820px;margin:0 auto;padding:20px 16px 40px}
+  a.back{color:var(--accent);text-decoration:none;font-size:14px}
+  h1{margin:10px 0 6px;font-size:1.5rem}
+  .lead{color:var(--muted);margin:0 0 16px}
+  textarea,input[type=text],input:not([type]),select{
+    width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--line);
+    border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+  textarea{min-height:180px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .row{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  button{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);
+    color:var(--ink);cursor:pointer;font:inherit}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  #status,.ok{color:#1a7f37}.bad{color:#c62828}.muted{color:var(--muted);font-size:13px}
+  #out,pre{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;white-space:pre-wrap}
+  #drop{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;margin:12px 0;background:var(--card)}
+  #drop.drag{border-color:var(--accent);background:var(--accent);color:#fff}
+  code{word-break:break-all}
+
+label{display:block;margin:10px 0 4px;font-size:14px;color:var(--muted)}
+.examples button{margin:4px 6px 0 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p><a class="back" href="../index.html">← Toolkit</a></p>
+<h1>Cron Explain</h1>
+<p class="lead">Five-field cron (<code>min hour dom mon dow</code>). Structural explainer — not a next-fire simulator. No network.</p>
+<label for="expr">Expression</label>
+<input id="expr" type="text" value="*/15 9-18 * * 1-5" spellcheck="false"/>
+<label for="lang">Language</label>
+<select id="lang"><option value="en">English</option><option value="zh">中文</option></select>
+<div class="row">
+  <button class="primary" id="go" type="button">Explain</button>
+</div>
+<div class="examples">
+  <span class="muted">Examples:</span>
+  <button type="button" data-e="0 9 * * 1-5">0 9 * * 1-5</button>
+  <button type="button" data-e="*/5 * * * *">*/5 * * * *</button>
+  <button type="button" data-e="30 2 1 * *">30 2 1 * *</button>
+  <button type="button" data-e="0 0 * * 0">0 0 * * 0</button>
+</div>
+<div id="out" style="margin-top:16px"></div>
+</div>
+<script>
+const NAMES = {
+  en: { min:'minute', hour:'hour', dom:'day-of-month', mon:'month', dow:'day-of-week',
+        every:'every', at:'at', on:'on', and:'and', from:'from', to:'to', step:'every',
+        days:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+        months:['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        ok:'Parsed OK', bad:'Need exactly 5 fields (min hour dom mon dow)' },
+  zh: { min:'分', hour:'时', dom:'日', mon:'月', dow:'星期',
+        every:'每', at:'在', on:'于', and:'且', from:'从', to:'到', step:'每隔',
+        days:['日','一','二','三','四','五','六'],
+        months:['','1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+        ok:'解析成功', bad:'需要恰好 5 段（分 时 日 月 星期）' }
+};
+function expand(field, labels) {
+  const L = labels;
+  if (field === '*') return L.every + ' ' + (labels._unit || '');
+  if (field.startsWith('*/')) {
+    const step = field.slice(2);
+    return `${L.step} ${step} ${labels._unit || ''}`.trim();
+  }
+  if (field.includes('-') && !field.includes(',')) {
+    const [a, b] = field.split('-');
+    const fa = labels.map ? (labels.map[a] || a) : a;
+    const fb = labels.map ? (labels.map[b] || b) : b;
+    return `${L.from} ${fa} ${L.to} ${fb}`;
+  }
+  if (field.includes(',')) {
+    return field.split(',').map(x => labels.map ? (labels.map[x] || x) : x).join(', ');
+  }
+  return (labels.map && labels.map[field]) ? labels.map[field] : field;
+}
+function explain(expr, lang) {
+  const L = NAMES[lang];
+  const parts = expr.trim().split(/\s+/);
+  if (parts.length !== 5) return { ok:false, text: L.bad };
+  const [mi, hh, dom, mon, dow] = parts;
+  const lines = [];
+  lines.push(`${L.min}: ` + expand(mi, {...L, _unit:L.min}));
+  lines.push(`${L.hour}: ` + expand(hh, {...L, _unit:L.hour}));
+  lines.push(`${L.dom}: ` + expand(dom, {...L, _unit:L.dom}));
+  const monMap = Object.fromEntries(L.months.map((n,i)=>[String(i),n]).filter(([i])=>i!=='0'));
+  lines.push(`${L.mon}: ` + expand(mon, {...L, map:monMap, _unit:L.mon}));
+  const dowMap = Object.fromEntries(L.days.map((n,i)=>[String(i),n]));
+  lines.push(`${L.dow}: ` + expand(dow, {...L, map:{...dowMap,'7':L.days[0]}, _unit:L.dow}));
+  return { ok:true, text: L.ok + '\n' + lines.join('\n') };
+}
+function run() {
+  const lang = document.getElementById('lang').value;
+  const r = explain(document.getElementById('expr').value, lang);
+  const out = document.getElementById('out');
+  out.textContent = r.text;
+  out.className = r.ok ? 'ok' : 'bad';
+}
+document.getElementById('go').onclick = run;
+document.getElementById('expr').addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+document.querySelectorAll('[data-e]').forEach(b => b.onclick = () => {
+  document.getElementById('expr').value = b.getAttribute('data-e'); run();
+});
+run();
+</script>
+</body>
+</html>
